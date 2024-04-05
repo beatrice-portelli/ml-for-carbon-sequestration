@@ -1,0 +1,33 @@
+╒══════════╤══════════════════════════╤══════════════════════════╤══════════════════════════╤══════════════════════════╕
+│ Model    │ Conf1                    │ Conf2                    │ Conf3                    │ Conf4                    │
+╞══════════╪══════════════════════════╪══════════════════════════╪══════════════════════════╪══════════════════════════╡
+│ CatBoost │ learning_rate: 0.03      │ learning_rate: 0.03      │ learning_rate: 0.03      │ learning_rate: 0.03      │
+│          │ l2_leaf_reg: 4           │ l2_leaf_reg: 4           │ l2_leaf_reg: 0.5         │ l2_leaf_reg: 0.5         │
+│          │ iterations: 150          │ iterations: 150          │ iterations: 150          │ iterations: 150          │
+│          │ depth: 6                 │ depth: 6                 │ depth: 2                 │ depth: 2                 │
+├──────────┼──────────────────────────┼──────────────────────────┼──────────────────────────┼──────────────────────────┤
+│ GBDT     │ subsample: 0.5           │ subsample: 0.5           │ subsample: 1             │ subsample: 1             │
+│          │ n_estimators: 100        │ n_estimators: 100        │ n_estimators: 1000       │ n_estimators: 1000       │
+│          │ max_leaf_nodes: 20       │ max_leaf_nodes: 20       │ max_leaf_nodes: 100      │ max_leaf_nodes: 100      │
+│          │ max_depth: 4             │ max_depth: 4             │ max_depth: 4             │ max_depth: 4             │
+│          │ learning_rate: 0.01      │ learning_rate: 0.01      │ learning_rate: 0.01      │ learning_rate: 0.01      │
+├──────────┼──────────────────────────┼──────────────────────────┼──────────────────────────┼──────────────────────────┤
+│ KNN      │ n_neighbors: 17          │ n_neighbors: 21          │ n_neighbors: 17          │ n_neighbors: 21          │
+├──────────┼──────────────────────────┼──────────────────────────┼──────────────────────────┼──────────────────────────┤
+│ MLP      │ max_iter: 50             │ max_iter: 50             │ max_iter: 50             │ max_iter: 50             │
+│          │ learning_rate_init: 0.01 │ learning_rate_init: 0.01 │ learning_rate_init: 0.01 │ learning_rate_init: 0.01 │
+│          │ hidden_layer_sizes: [8]  │ hidden_layer_sizes: [8]  │ hidden_layer_sizes: [8]  │ hidden_layer_sizes: [4]  │
+├──────────┼──────────────────────────┼──────────────────────────┼──────────────────────────┼──────────────────────────┤
+│ RF       │ n_estimators: 1200       │ n_estimators: 400        │ n_estimators: 1000       │ n_estimators: 1200       │
+│          │ min_samples_split: 16    │ min_samples_split: 16    │ min_samples_split: 10    │ min_samples_split: 10    │
+│          │ min_samples_leaf: 5      │ min_samples_leaf: 4      │ min_samples_leaf: 5      │ min_samples_leaf: 6      │
+│          │ max_features: 5          │ max_features: 4          │ max_features: 6          │ max_features: 6          │
+│          │ max_depth: 120           │ max_depth: 150           │ max_depth: 150           │ max_depth: 120           │
+├──────────┼──────────────────────────┼──────────────────────────┼──────────────────────────┼──────────────────────────┤
+│ SVR      │ gamma: 1e-05             │ gamma: 1e-05             │ gamma: 1e-05             │ gamma: 1e-05             │
+│          │ C: 10                    │ C: 10                    │ C: 1000                  │ C: 10                    │
+├──────────┼──────────────────────────┼──────────────────────────┼──────────────────────────┼──────────────────────────┤
+│ XGBoost  │ n_estimators: 800        │ n_estimators: 700        │ n_estimators: 500        │ n_estimators: 700        │
+│          │ max_depth: 4             │ max_depth: 4             │ max_depth: 5             │ max_depth: 4             │
+│          │ learning_rate: 0.015     │ learning_rate: 0.01      │ learning_rate: 0.015     │ learning_rate: 0.01      │
+╘══════════╧══════════════════════════╧══════════════════════════╧══════════════════════════╧══════════════════════════╛

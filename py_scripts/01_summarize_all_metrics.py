@@ -6,13 +6,13 @@
 
 import pandas as pd
 from glob import glob
-from configs import *
+from experiments_to_run import *
 
 
 # In[2]:
 
 
-paths = glob("results/metrics*")
+paths = glob("../results/metrics*")
 
 df = []
 for path in paths:
@@ -29,46 +29,45 @@ metrics = ["R2", "MAPE", "RMSE", "NRMSE"]
 mean_df = df.groupby(["target", "config", "model"]).agg("mean")[metrics]
 std_df = df.groupby(["target", "config", "model"]).agg("std")[metrics]
 
-display(mean_df)
-display(std_df)
+print(mean_df)
+print(std_df)
 
 
 # In[4]:
 
 
-for target_var in [TARGET_CARBON, TARGET_CARBON_IC]:
+for target_var in TARGETS:
     
     tmp = df[(df.target == target_var)]\
-      [["target", "config", "model", "hyperparams", "R2", "RMSE", "NRMSE"]]\
+      [["target", "config", "model", "hyperparams"]]\
       .groupby(["config", "model"]).agg({
         "hyperparams":"first",
-        "R2":"mean",
-        "RMSE":"mean",
-        "NRMSE":"mean",
       }).reset_index()
-    
-    tmp_std = df[(df.target == target_var)]\
-      [["target", "config", "model", "hyperparams", "R2", "RMSE", "NRMSE"]]\
-      .groupby(["config", "model"]).agg({
-        "R2":"std",
-        "RMSE":"std",
-        "NRMSE":"std",
-      }).reset_index()
-    
-    for idx, row in tmp.iterrows():
-        
-        tmp.at[idx, "R2"] = f"{round(row.R2, 2):.2f} ± {round(tmp_std.at[idx, 'R2'], 2):.2f}"
-        tmp.at[idx, "RMSE"] = f"{round(row.RMSE, 2):.2f} ± {round(tmp_std.at[idx, 'RMSE'], 2):.2f}"
-        tmp.at[idx, "NRMSE"] = f"{round(row.NRMSE, 2):.2f} ± {round(tmp_std.at[idx, 'NRMSE'], 2):.2f}"
 
     tmp.hyperparams = tmp.hyperparams.apply(
         lambda x: "\n".join([f"{k}: {v}" for k,v in x.items()]) if x is not None else ""
     )
     
-    tmp.rename(columns={"NRMSE": "%RMSE"}, inplace=True)
+    gb = tmp.groupby("model")
+    new_tmp = []
+    for m,g in gb:
+        new_tmp.append(g.drop(columns=["model"]).rename(columns={"hyperparams":m}).set_index("config").T)
+    
+    tmp = pd.concat(new_tmp).reset_index().rename(columns={"index":"Model"})
     
     print("     "+target_var)
-    print("results exported to", f"results/hyperparams_{target_var}.[md/xlsx]")
-    tmp.to_markdown(f"results/hyperparams_{target_var}.md", index=False, tablefmt="grid")
-    tmp.to_excel(f"results/hyperparams_{target_var}.xlsx")
+    print("results exported to", f"../results/hyperparams_{target_var}.[txt/xlsx]")
+    tmp.to_markdown(f"../results/hyperparams_{target_var}.txt", index=False, tablefmt="fancy_grid")
+    tmp.to_excel(f"../results/hyperparams_{target_var}.xlsx", index=False)
+    
+    print("results exported to", f"../figures_and_tables/table_appendix_hyperparameters_{target_var}.[txt/xlsx/csv]")
+    tmp.to_markdown(f"../figures_and_tables/table_appendix_hyperparameters_{target_var}.txt", index=False, tablefmt="fancy_grid")
+    tmp.to_excel(f"../figures_and_tables/table_appendix_hyperparameters_{target_var}.xlsx", index=False)
+    tmp.to_csv(f"../figures_and_tables/table_appendix_hyperparameters_{target_var}.csv", index=False)
+
+
+# In[ ]:
+
+
+
 

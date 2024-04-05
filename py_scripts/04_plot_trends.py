@@ -8,50 +8,30 @@ import pandas as pd
 import numpy as np
 
 from glob import glob
-from configs import *
+from experiments_to_run import *
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-
-name_mapping = {
-    'CatBoostRegressor':         "CatBoost",
-    'GradientBoostingRegressor': "GBDT",
-    'KNeighborsRegressor':       "KNN",
-    'LinearRegression':          "MLR",
-    'MLPRegressor':              "MLP",
-    'RandomForestRegressor':     "RF",
-    'SVR':                       "SVR",
-    'XGBRegressor':              "XGBoost",
-}
-
-paths = glob("results/predictions*")
+paths = glob("../results/predictions*.pickle")
 
 df = []
 for path in paths:
     tmp_df = pd.read_pickle(path)
     df.append(tmp_df)
 df = pd.concat(df)
-df.model = df.model.replace(name_mapping)
-# display(df.head())
 
 
 # In[2]:
 
 
-for TARGET in [TARGET_CARBON, TARGET_CARBON_IC]:
-    
-    target_name = "TARGET_CARBON" if TARGET == TARGET_CARBON else "TARGET_CARBON_IC"
-    
+for TARGET in TARGETS:
+        
     data = df[
         (df.model=="RF") &\
-        (df.config=="CONFIG_2") &\
+        (df.config=="Conf3") &\
         (df.target==TARGET)
     ]
-
-    # fig, ax = plt.subplots(
-    #     figsize=(6, 6),
-    # )
 
     test = np.concatenate(data.y_test.values.tolist())
     pred = np.concatenate(data.y_pred.values.tolist())
@@ -83,11 +63,15 @@ for TARGET in [TARGET_CARBON, TARGET_CARBON_IC]:
     ax.set_xlim((-maxval/100, maxval))
     ax.set_ylim((-maxval/100, maxval))
     
-    ax.set_xlabel("Real data - CS" if target_name == "TARGET_CARBON" else "Real data - CSE")
-    ax.set_ylabel("Predicted data - CS" if target_name == "TARGET_CARBON" else "Predicted data - CSE")
+    ax.set_xlabel("Real data - "+TARGET)
+    ax.set_ylabel("Predicted data - "+TARGET)
     
-    plt.savefig(f"results/trends_with_margins_RF_{target_name}.png", facecolor='white', bbox_inches='tight', dpi=300)
-    plt.savefig(f"results/trends_with_margins_RF_{target_name}.pdf", bbox_inches='tight', dpi=300)
+    plt.savefig(f"../results/trends_with_margins_RF_{TARGET}.png", facecolor='white', bbox_inches='tight', dpi=300)
+    plt.savefig(f"../results/trends_with_margins_RF_{TARGET}.pdf", bbox_inches='tight', dpi=300)
+    print("figure exported to", f"../results/trends_with_margins_RF_{TARGET}.[png/pdf]")
+    
+    plt.savefig(f"../figures_and_tables/figure_comparison_real_predicted_data_RF_{TARGET}.png", facecolor='white', bbox_inches='tight', dpi=300)
+    print("figure exported to", f"../figures_and_tables/figure_comparison_real_predicted_data_RF_{TARGET}.png")
 
     plt.show()
 

@@ -6,7 +6,8 @@
 
 import pandas as pd
 import numpy as np
-
+import os
+import cv2
 from glob import glob
 from configs import *
 import matplotlib as mpl
@@ -16,7 +17,7 @@ plt.rcParams["font.family"] = "serif"
 from sklearn.inspection import permutation_importance
 
 
-paths = glob("results/predictions*")
+paths = glob("../results/predictions*.pickle")
 
 df = []
 for path in paths:
@@ -34,14 +35,14 @@ def compute_feature_importances(target, df):
     
     df_feature_importances = []
 
-    gb = df[df.target == target].groupby(["model", "config"])
+    gb = df[df.target == target].groupby(["model", "config", "model_name"])
 
     for idx, data in gb:
 
-        if idx[0] == "LinearRegression":
+        if idx[2] == "LinearRegression":
             feature_importances = data.model_obj.iloc[0].coef_.tolist()
 
-        elif idx[0] in ["MLPRegressor", "SVR", "KNeighborsRegressor"]:
+        elif idx[2] in ["MLPRegressor", "SVR", "KNeighborsRegressor"]:
 
             X_test = data.iloc[0].X_test.values
             y_test = data.iloc[0].y_test
@@ -93,8 +94,20 @@ def compute_feature_importances(target, df):
 # In[3]:
 
 
-df_feature_importances_carbon = compute_feature_importances(TARGET_CARBON, df)
-df_feature_importances_carbon_ic = compute_feature_importances(TARGET_CARBON_IC, df) 
+path = "../results/feature_importances.csv"
+
+if not os.path.exists(path):
+
+    df_feature_importances_carbon_storage = compute_feature_importances(TARGET_CARBON_STORAGE, df) 
+    df_feature_importances_carbon_sequestration = compute_feature_importances(TARGET_CARBON_SEQUESTRATION, df)
+
+    df_feature_importances_carbon_storage["target"] = TARGET_CARBON_STORAGE
+    df_feature_importances_carbon_sequestration["target"] = TARGET_CARBON_SEQUESTRATION
+
+    df_feature_importances = pd.concat((df_feature_importances_carbon_storage, df_feature_importances_carbon_sequestration), ignore_index=True)
+    df_feature_importances.to_csv(path, index=None)
+df_feature_importances = pd.read_csv(path)
+df_feature_importances
 
 
 # # Plot feature importance
@@ -102,12 +115,15 @@ df_feature_importances_carbon_ic = compute_feature_importances(TARGET_CARBON_IC,
 # In[4]:
 
 
+from experiments_to_run import CONFIGS
+
 def plot_feature_importances(target, df_feature_importances, model):
     
-    df_feature_importances.model = df_feature_importances.model.replace(name_mapping)
+    df_feature_importances = df_feature_importances[df_feature_importances.target == target]
+    
     data_to_plot = []
 
-    for CONFIG in [CONFIG_0, CONFIG_3, CONFIG_2, CONFIG_1][::-1]:
+    for CONFIG in CONFIGS[::-1]:
 
         data_to_plot.append(df_feature_importances[
             (df_feature_importances.config == CONFIG.name) &\
@@ -169,7 +185,7 @@ def plot_feature_importances(target, df_feature_importances, model):
         )
         ax.set_xlim(-1, len(f))
 
-        ax.set_ylabel(config_mapping[data.iloc[i].config], fontweight="bold")
+        ax.set_ylabel(data.iloc[i].config, fontweight="bold")
         
 
     ylims = ax.get_ylim()
@@ -185,7 +201,7 @@ def plot_feature_importances(target, df_feature_importances, model):
         if idx != len(data_to_plot)-1:
             ax.get_xaxis().set_visible(False)
 
-        config_name = config_mapping[data.iloc[0].config]
+        config_name = data.iloc[0].config
         
         bar_args = dict(align="edge", ec="#0004", hatch=["////"], fc="#fff0", lw=0, zorder=3, height=ylims[1]+abs(ylims[0]), bottom=ylims[0])
         
@@ -208,17 +224,6 @@ def plot_feature_importances(target, df_feature_importances, model):
 
 # In[5]:
 
-
-name_mapping = {
-    'CatBoostRegressor':         "CatBoost",
-    'GradientBoostingRegressor': "GBDT",
-    'KNeighborsRegressor':       "KNN",
-    'LinearRegression':          "MLR",
-    'MLPRegressor':              "MLP",
-    'RandomForestRegressor':     "RF",
-    'SVR':                       "SVR",
-    'XGBRegressor':              "XGBoost",
-}
 
 all_features = vegetation_indexes + chm + climatic + elevation_slope_aspect
 
@@ -305,12 +310,6 @@ for x in feature_order_helper:
                 feature_order.append(feature)
                 break
 
-config_mapping = {
-    "CONFIG_0": "Sentinel 2",
-    "CONFIG_3": "Sentinel 2 + Climatic",
-    "CONFIG_2": "Sentinel 2 + CHM",
-    "CONFIG_1": "Sentinel 2 + Climatic + CHM",
-}
 tmp = [x.split(" ")[0] for x in feature_order]
 
 chm_start = tmp.index("CHM")
@@ -331,29 +330,20 @@ vlines_idxs = [x for x in vlines_idxs if x>0 and x<len(feature_order)-1]
 # In[6]:
 
 
-plot_feature_importances(TARGET_CARBON_IC, df_feature_importances_carbon, "RF")
-plt.savefig("results/feature_importance_RF_CARBON.png", facecolor='white', bbox_inches='tight', dpi=100)
-plt.savefig("results/feature_importance_RF_CARBON.pdf", bbox_inches='tight', dpi=200)
-plt.show()
+for model, target in [("RF", "CS"), ("RF", "CSE")]:
 
-
-# In[7]:
-
-
-plot_feature_importances(TARGET_CARBON_IC, df_feature_importances_carbon_ic, "RF")
-plt.savefig("results/feature_importance_RF_CARBON_IC.png", facecolor='white', bbox_inches='tight', dpi=100)
-plt.savefig("results/feature_importance_RF_CARBON_IC.pdf", bbox_inches='tight', dpi=200)
-plt.show()
-
-
-# In[8]:
-
-
-import cv2
-
-for img_name in ["CARBON", "CARBON_IC"]:
-
-    image = cv2.imread(f"results/feature_importance_RF_{img_name}.png")
+    plot_feature_importances(target, df_feature_importances, model)
+    
+    plt.savefig(f"../results/feature_importance_{model}_{target}.png", facecolor='white', bbox_inches='tight', dpi=100)
+    plt.savefig(f"../results/feature_importance_{model}_{target}.pdf", bbox_inches='tight', dpi=200)
+    print("figure exported to", f"../results/figure_feature_importance_{model}_{target}.[png/pdf]")
+    # plt.show()
+    
+    image = cv2.imread(f"../results/feature_importance_{model}_{target}.png")
     image = cv2.rotate(image, cv2.ROTATE_90_CLOCKWISE)
-    cv2.imwrite(f"results/feature_importance_RF_{img_name}_rot90.png", image)
+    cv2.imwrite(f"../results/feature_importance_{model}_{target}_rot90.png", image)
+    print("figure exported to", f"../results/figure_feature_importance_{model}_{target}_rot90.png")
+    
+    cv2.imwrite(f"../figures_and_tables/figure_feature_importance_{model}_{target}.png", image)
+    print("figure exported to", f"../figures_and_tables/figure_feature_importance_{model}_{target}.png")
 

@@ -4,29 +4,11 @@
 # In[1]:
 
 
-root_folder = "results"
+root_folder = "../results"
 
 
 # In[2]:
 
-
-model2paper = {
-    'CatBoostRegressor':         "CatBoost",
-    'GradientBoostingRegressor': "GBDT",
-    'KNeighborsRegressor':       "KNN",
-    'LinearRegression':          "MLR",
-    'MLPRegressor':              "MLP",
-    'RandomForestRegressor':     "RF",
-    'SVR':                       "SVR",
-    'XGBRegressor':              "XGBoost",
-}
-
-config2paper = {
-    "CONFIG_0": "Conf1", # satellite
-    "CONFIG_1": "Conf4", # satellite + climate + chm
-    "CONFIG_2": "Conf3", # satellite + chm
-    "CONFIG_3": "Conf2", # satellite + climate
-}
 
 metrics2paper = {
     "R2": "R2",
@@ -34,48 +16,15 @@ metrics2paper = {
     "NRMSE": "%RMSE",
 }
 
-target2paper = {
-    "ICCapv_ha": "CSE",
-    "Catot_ha": "CS",
-}
-
-paper2model = {v:k for k,v in model2paper.items()}
-paper2config = {v:k for k,v in config2paper.items()}
-paper2metrics = {v:k for k,v in metrics2paper.items()}
-
-model_order = [
-    "CatBoost",
-    "GBDT",
-    "KNN",
-    "MLR",
-    "MLP",
-    "RF",
-    "SVR",
-    "XGBoost",
-]
-
-config_order = [
-    "Conf1",
-    "Conf2",
-    "Conf3",
-    "Conf4",
-]
-
-metrics_order = [
-    "R2",
-    "RMSE",
-    "%RMSE",
-]
-
 
 # In[3]:
 
 
 import pandas as pd
 from glob import glob
-from configs import *
+from experiments_to_run import *
 
-paths = glob(f'{root_folder.replace("[","[[]").replace("]","[]]").replace("[[[]]", "[[]")}/metrics*')
+paths = glob(f'{root_folder}/metrics*')
 
 df = []
 for path in paths:
@@ -97,10 +46,7 @@ overall_df = overall_df.drop(columns = [x for x in overall_df.columns if "str" n
 overall_df.columns = metrics
 overall_df = overall_df.reset_index()
 
-overall_df.target.replace(target2paper, inplace=True)
-overall_df.config.replace(config2paper, inplace=True)
 overall_df.sort_values(["target","config", "model"], inplace=True)
-overall_df.model.replace(model2paper, inplace=True)
 overall_df.rename(columns=metrics2paper, inplace=True)
 overall_df
 
@@ -108,11 +54,16 @@ overall_df
 # In[4]:
 
 
-for target in ["CS", "CSE"]:
+for target in TARGETS:
     tmp = overall_df[(overall_df.target==target)].drop(columns=["target"])
-    print("results exported to", f"{root_folder}/table_{target}.[md/xlsx]")
-    tmp.to_markdown(f"{root_folder}/table_{target}.md", index=False, tablefmt="grid")
+    print("results exported to", f"{root_folder}/table_{target}.[txt/xlsx]")
+    tmp.to_markdown(f"{root_folder}/table_{target}.txt", index=False, tablefmt="fancy_grid")
     tmp.to_excel(f"{root_folder}/table_{target}.xlsx", index=False)
+    
+    print("results exported to", f"../figures_and_tables/table_performance_{target}.[txt/xlsx/csv]")
+    tmp.to_markdown(f"../figures_and_tables/table_performance_{target}.txt", index=False, tablefmt="fancy_grid")
+    tmp.to_excel(f"../figures_and_tables/table_performance_{target}.xlsx", index=False)
+    tmp.to_csv(f"../figures_and_tables/table_performance_{target}.csv", index=False)
 
 
 # In[ ]:
