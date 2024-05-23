@@ -63,8 +63,8 @@ OVERWRITE = True
 total_iterations = len(MODELS)*len(CONFIGS)*len(TARGETS)
 curr_iteration = 0
 
-for MODEL in MODELS[:1]:
-    for CONFIG in CONFIGS[:1]:
+for MODEL in MODELS:
+    for CONFIG in CONFIGS:
         for TARGET in TARGETS:
             
             curr_iteration+=1

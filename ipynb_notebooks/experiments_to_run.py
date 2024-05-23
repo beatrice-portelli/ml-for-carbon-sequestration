@@ -1,18 +1,106 @@
 from sklearn.ensemble import (
     RandomForestRegressor,
-    GradientBoostingRegressor
+    GradientBoostingRegressor,
+    BaggingRegressor,
+    AdaBoostRegressor,
+    StackingRegressor,
 )
+from sklearn.tree import DecisionTreeRegressor
 from sklearn.svm import SVR
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.neural_network import MLPRegressor
+from sklearn.linear_model import (Ridge, BayesianRidge)
+from sklearn.gaussian_process import GaussianProcessRegressor
+from sklearn.gaussian_process.kernels import RBF
+
 from catboost import CatBoostRegressor
 from xgboost import XGBRegressor
+from lightgbm import LGBMRegressor
 
 
 from configs import *
 
 
 MODELS = [
+    
+    # format: (model_class, param_distributions, search_cv_args)
+    
+    (
+        lambda x: BaggingRegressor(
+            base_estimator=DecisionTreeRegressor(random_state=42),
+            random_state=42,
+        ),
+        {
+            'n_estimators': [50, 100, 200],  # Number of trees in the ensemble
+            'base_estimator__max_depth': [4, 5, 10]  # Max depth of each tree
+        },
+        dict(),
+    ),
+    
+    (
+        lambda x: AdaBoostRegressor(
+            base_estimator=DecisionTreeRegressor(max_depth=5,random_state=42),
+            random_state=42,
+        ),
+        {
+            'n_estimators': [50, 100, 200],  # Number of trees in the ensemble
+            'learning_rate': [0.01, 0.1, 1.0]  # Learning rate of the boosting process
+        },
+        dict(),
+    ),
+    
+    (
+        lambda x: LGBMRegressor(
+            random_state=42,
+        ),
+        {
+            'n_estimators': [50, 100, 200],  # Number of trees in the ensemble
+            'max_depth': [4, 5, 10],  # Max depth of each tree
+            'learning_rate': [0.05, 0.1, 0.2]  # Learning rate
+        },
+        dict(),
+    ),
+    
+    (
+        lambda x: StackingRegressor(
+            estimators=[
+                ('dt', DecisionTreeRegressor(max_depth=5, random_state=42)),
+                ('bagging', BaggingRegressor(
+                    base_estimator=DecisionTreeRegressor(max_depth=5, random_state=42),
+                    n_estimators=100, random_state=42)
+                )
+            ],
+            final_estimator=Ridge()
+        ),
+        {
+            'final_estimator__alpha': [0.1, 1.0, 10.0],  # Regularization strength for Ridge meta-model
+        },
+        dict(),
+    ),
+    
+    # (
+    #     lambda x: GaussianProcessRegressor(random_state=42),
+    #     {
+    #         'kernel': [None, RBF(length_scale=1.0), RBF(length_scale=0.5)],  # Kernel options
+    #         'alpha': [1e-10, 1e-5, 1e-15],
+    #     },
+    #     dict(),
+    # ),
+    
+    (
+        lambda x: BayesianRidge(),
+        {
+            'n_iter': [100, 200, 300],  # Number of iterations
+            'alpha_1': [1e-6, 1e-5, 1e-4],  # Hyperparameter for the weight of the prior for alpha
+            'alpha_2': [1e-6, 1e-5, 1e-4],  # Hyperparameter for the weight of the prior for beta
+            'lambda_1': [1e-6, 1e-5, 1e-4],  # Hyperparameter for the weight of the prior for lambda
+            'lambda_2': [1e-6, 1e-5, 1e-4]  # Hyperparameter for the weight of the prior for lambda
+        },
+        dict(),
+    ),
+    
+    # ===============================================================
+    #  previous models
     
     (
         lambda x: MLPRegressor(
@@ -35,7 +123,7 @@ MODELS = [
             'C': [1000, 100, 10, 1, 0.1],
             'gamma': [1e-5, 1e-4, 1e-3, 1e-2],
         },
-        dict(n_iter=30),
+        dict(),
     ),
     
     (
@@ -43,7 +131,7 @@ MODELS = [
         {
             "n_neighbors": list(range(1,31)),
         },
-        dict(n_iter=30),
+        dict(),
     ),
     
     (
@@ -55,7 +143,7 @@ MODELS = [
             'min_samples_split': [10, 12, 14, 16],
             'n_estimators': [200, 400, 600, 1000, 1200]
         },
-        dict(cv = 3, n_jobs = -1),
+        dict(),
     ),
     
     (
@@ -67,7 +155,7 @@ MODELS = [
             'max_depth':[1,2,4],
             'subsample':[.5,.75,1]
         },
-        dict(n_iter=20, n_jobs=-1),
+        dict(),
     ),
     
     (

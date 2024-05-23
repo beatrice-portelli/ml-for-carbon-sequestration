@@ -123,7 +123,7 @@ Defines:
 Contains the code to run the training and evaluation of the models and configurations contained in `experiments_to_run.py`. The code does the following for each model:
 - load `data.csv` and select the relevant subset of input features (according to the CONFIG) and target (according to TARGET)
 - perform a randomized grid search to find the best hyperparameters for the model
-- train and evaluate the model 10 times with different folds of train/test data (66/33)
+- train and evaluate the model with 5-fold cross validation
 - calculate the following metrics on all the folds: MSE, R2, MAPE, RMSE, NRMSE (%RMSE)
 - save the predictions and metrics in
   - `../results/predictions--<TARGET>--<CONFIG>--<MODEL>.pickle`
@@ -142,7 +142,10 @@ Saves the resulting table(s) in
   - `../results/table_<TARGET>.[txt/csv/xlsx]`
   - `../figures_and_tables/table_performance_<TARGET>.[txt/csv/xlsx]`
 
-#### `03_feature_importance.*`
+#### ⚠️ `03_plot_comparison.*` new, work in progress ⚠️
+
+
+#### ⚠️ `03_feature_importance.*` removed, work in progress ⚠️
 Computes the feature importances and creates the feature importance plots.
 Saves all features importances in
   - `../results/feature_importances.csv`
@@ -152,7 +155,7 @@ Saves the images for the Random Forest (RF) on Conf3 in
   - `../results/feature_importance_RF_<TARGET>_rot90.png`
   - `../figures_and_tables/figure_feature_importance_RF_<TARGET>.png`
 
-#### `04_plot_trends.*`
+#### ⚠️ `04_plot_trends.*` removed, work in progress ⚠️
 Loads all the predictions, plots the correlation between real and predicted values and their marginal distributions.
 Saves the results for the Random Forest (RF) on Conf3 in
   - `../results/trends_with_margins_RF_<TARGET>.[pdf/png]`
