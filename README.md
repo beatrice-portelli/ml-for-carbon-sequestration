@@ -1,7 +1,7 @@
 # ML for Carbon Sequestration
 
 Data and code for the manuscript
-"A Comparison between Machine Learning Methods for Carbon Sequestration Estimation based on Remote Sensing Data".
+"Assessing Ensemble Models for Carbon Sequestration and Storage Estimation in Forests Using Remote Sensing Data".
 
 Authors:
 Mehdi Fasihi ¹,
@@ -16,6 +16,10 @@ Giuseppe Serra ¹.
 ³ Department of Agricultural, Food, Environmental and Animal Sciences, University of Udine, Udine, Italy <br>
 ⁴ Department of Life Sciences, University of Trieste, Trieste, Italy <br>
 ⁵ Free University of Bolzano, Bolzano, Italy
+
+## Metadata
+
+See file `metadata.xml`
 
 ## Requirements
 
