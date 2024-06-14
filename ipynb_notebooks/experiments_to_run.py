@@ -78,15 +78,6 @@ MODELS = [
         dict(),
     ),
     
-    # (
-    #     lambda x: GaussianProcessRegressor(random_state=42),
-    #     {
-    #         'kernel': [None, RBF(length_scale=1.0), RBF(length_scale=0.5)],  # Kernel options
-    #         'alpha': [1e-10, 1e-5, 1e-15],
-    #     },
-    #     dict(),
-    # ),
-    
     (
         lambda x: BayesianRidge(),
         {
@@ -98,9 +89,6 @@ MODELS = [
         },
         dict(),
     ),
-    
-    # ===============================================================
-    #  previous models
     
     (
         lambda x: MLPRegressor(
