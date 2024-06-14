@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import os
@@ -12,9 +12,11 @@ from sklearn.model_selection import train_test_split
 
 from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
 from sklearn.model_selection import KFold, RepeatedKFold, LeaveOneOut
+from sklearn.linear_model import (Ridge, BayesianRidge)
 
 from sklearn.svm import SVR
 from sklearn.neighbors import KNeighborsRegressor
+from sklearn.ensemble import StackingRegressor
 
 from sklearn.metrics import (
     mean_squared_error,
@@ -48,6 +50,13 @@ model2paper = {
     'RandomForestRegressor':     "RF",
     'SVR':                       "SVR",
     'XGBRegressor':              "XGBoost",
+    # =========================================
+    "GaussianProcessRegressor": "GaussProc",
+    "BayesianRidge": "BayesianNN",
+    "StackingRegressor": "StackEns",
+    "LGBMRegressor": "LightGBM",
+    "AdaBoostRegressor": "AdaBoost",
+    "BaggingRegressor": "BaggedDT",
 }
 
 from configs import *
@@ -58,7 +67,7 @@ if not os.path.exists("../results"):
 if not os.path.exists("../figures_and_tables"):
     os.makedirs("../figures_and_tables")
 
-OVERWRITE = True
+OVERWRITE = False
 
 total_iterations = len(MODELS)*len(CONFIGS)*len(TARGETS)
 curr_iteration = 0
@@ -88,7 +97,7 @@ for MODEL in MODELS:
             X = df[CONFIG.features]
             y = df[TARGET]
 
-            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2)
+            # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2)
 
             model_class, param_distributions, search_cv_args = MODEL
             
@@ -100,15 +109,23 @@ for MODEL in MODELS:
                 
                 search_cv = RandomizedSearchCV(
                     model_class(_), param_distributions=param_distributions,
-                    scoring="neg_mean_squared_error", random_state=0, **search_cv_args
+                    scoring="neg_mean_squared_error", random_state=0,
+                    cv=5,
+                    n_jobs=-1,
+                    n_iter=30,
+                    return_train_score=True,
+                    **search_cv_args
                 )
-                search_cv.fit(X_train.values, y_train.values)
+                search_cv.fit(X.values, y.values)
 
                 print("The best hyperparameters are ",search_cv.best_params_)
+                print("The best score is ",search_cv.best_score_)
                 
                 if type(search_cv.estimator) not in [
                     KNeighborsRegressor,
-                    SVR
+                    SVR,
+                    StackingRegressor,
+                    BayesianRidge,
                 ]:
                     regressor = model_class(_).set_params( # use search_cv.estimator, to make it independent from the estimator's class
                         random_state=0,           # fixed random state
@@ -121,17 +138,22 @@ for MODEL in MODELS:
 
             data = []
             
-            # =================================================================
-            # the following code is an alternative, to split the dataset in
-            # 66/33 random train/test splits for 10 times to run the evaluation
+#             # =================================================================
+#             # the following code is an alternative, to split the dataset in
+#             # 66/33 random train/test splits for 10 times to run the evaluation
             
-            folds = []
+#             folds = []
 
-            for random_state in range(10):
-                cv = KFold(n_splits=3, random_state=random_state, shuffle=True)
-                tmp_folds = cv.split(X)
-                folds.append(next(tmp_folds))
-                
+#             for random_state in range(10):
+#                 cv = KFold(n_splits=3, random_state=random_state, shuffle=True)
+#                 tmp_folds = cv.split(X)
+#                 folds.append(next(tmp_folds))
+
+            # =================================================================
+            # 5-fold cross validation
+            
+            cv = KFold(n_splits=5, random_state=0, shuffle=True)
+            folds = cv.split(X)
 
             for i, (train_index, test_index) in enumerate(folds):
 
@@ -163,7 +185,7 @@ for MODEL in MODELS:
             save_path = f"../results/predictions--{TARGET}--{CONFIG.name}--{model2paper[regressor.__class__.__name__]}.pickle"
             data.to_pickle(save_path)
             # print("predictions saved to", save_path)
-            # print(data)
+            # display(data)
             
             tmp = data
             y_test = pd.concat(
@@ -191,14 +213,14 @@ for MODEL in MODELS:
             save_path = f"../results/metrics--{TARGET}--{CONFIG.name}--{model2paper[regressor.__class__.__name__]}.pickle"
             data.to_pickle(save_path)
             print("metrics, predictions and models saved to\n", save_path)
-            # print(data)
+            # display(data)
 
             for metric in ["R2", "MAPE", "RMSE", "NRMSE"]:
 
                 print(f"{metric:>10} {data[metric].mean().round(2):>7} ± {data[metric].std().round(2):>5}")
 
 
-# In[ ]:
+# In[2]:
 
 
 import shutil

@@ -19,21 +19,10 @@ for path in paths:
     tmp_df = pd.read_pickle(path)
     df.append(tmp_df)
 df = pd.concat(df)
-df
+df = df[df.model != "▸ Ensemble"]
 
 
 # In[3]:
-
-
-metrics = ["R2", "MAPE", "RMSE", "NRMSE"]
-mean_df = df.groupby(["target", "config", "model"]).agg("mean")[metrics]
-std_df = df.groupby(["target", "config", "model"]).agg("std")[metrics]
-
-print(mean_df)
-print(std_df)
-
-
-# In[4]:
 
 
 for target_var in TARGETS:
@@ -54,6 +43,20 @@ for target_var in TARGETS:
         new_tmp.append(g.drop(columns=["model"]).rename(columns={"hyperparams":m}).set_index("config").T)
     
     tmp = pd.concat(new_tmp).reset_index().rename(columns={"index":"Model"})
+    
+    
+    tmp.Conf1 = tmp.Conf1.str.split("\n")
+    tmp.Conf2 = tmp.Conf2.str.split("\n")
+    tmp.Conf3 = tmp.Conf3.str.split("\n")
+    tmp.Conf4 = tmp.Conf4.str.split("\n")
+    tmp = tmp.explode(["Conf1", "Conf2", "Conf3", "Conf4"])
+    tmp["hyperparameter"] = tmp.Conf1.str.split(":").str[0]
+    tmp.Conf1 = tmp.Conf1.str.split(" ").str[-1]
+    tmp.Conf2 = tmp.Conf2.str.split(" ").str[-1]
+    tmp.Conf3 = tmp.Conf3.str.split(" ").str[-1]
+    tmp.Conf4 = tmp.Conf4.str.split(" ").str[-1]
+    tmp = tmp[["Model", "hyperparameter", "Conf1", "Conf2", "Conf3", "Conf4"]]
+    
     
     print("     "+target_var)
     print("results exported to", f"../results/hyperparams_{target_var}.[txt/xlsx]")

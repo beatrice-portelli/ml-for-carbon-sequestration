@@ -32,12 +32,54 @@ for path in paths:
     df.append(tmp_df)
 df = pd.concat(df)
 
-metrics = ["R2", "RMSE", "NRMSE"]
-mean_df = df.groupby(["target", "config", "model"]).agg("mean")[metrics]#.reset_index()
-std_df = df.groupby(["target", "config", "model"]).agg("std")[metrics]#.reset_index()
+
+# In[4]:
+
+
+metrics = ["R2", "MAPE", "RMSE", "NRMSE"]
+
+df_ens = df[df.model == "▸ Ensemble"]
+df = df[df.model != "▸ Ensemble"]
+
+mean_df = df.groupby(["target", "config", "model"]).agg("mean")[metrics]
+std_df = df.groupby(["target", "config", "model"]).agg("std")[metrics]
+
+mean_df_ens = df_ens.groupby(["target", "config", "model"]).agg("mean")[metrics]
+std_df_ens = df_ens.groupby(["target", "config", "model"]).agg("std")[metrics]
+
+for target in mean_df.index.levels[0]:
+    for config in mean_df.index.levels[1]:
+        
+        # add Average model performance
+        item = pd.DataFrame(
+            mean_df.loc[target, config][metrics].mean().to_dict(),
+            index=[(target, config, "▸ Average")]
+        )
+        mean_df = pd.concat((mean_df, item))
+
+for target in std_df.index.levels[0]:
+    for config in std_df.index.levels[1]:
+        
+        # add Average model performance
+        item = pd.DataFrame(
+            std_df.loc[target, config][metrics].mean().to_dict(),
+            index=[(target, config, "▸ Average")]
+        )
+        std_df = pd.concat((std_df, item))
+
+mean_df = pd.concat([mean_df, mean_df_ens])
+std_df = pd.concat([std_df, std_df_ens])
+
 
 std_df.columns = ["s_"+x for x in std_df.columns]
 overall_df = pd.concat((mean_df, std_df), axis=1)
+
+for target in TARGETS:
+    tmp = overall_df.reset_index()[(overall_df.reset_index().target==target)].drop(columns=["target"])
+    print("results exported to", f"{root_folder}/overall_metrics--{target}.[pickle/csv]")
+    tmp.to_pickle(f"{root_folder}/overall_metrics--{target}.pickle")
+    tmp.to_csv(f"{root_folder}/overall_metrics--{target}.csv", index=False)
+
 
 for metric in metrics:
     overall_df[f"str_{metric}"] = overall_df.apply(lambda row: f"{row[metric]:.2f} ± {row['s_'+metric]:.2f}", axis=1)
@@ -51,7 +93,7 @@ overall_df.rename(columns=metrics2paper, inplace=True)
 overall_df
 
 
-# In[4]:
+# In[5]:
 
 
 for target in TARGETS:

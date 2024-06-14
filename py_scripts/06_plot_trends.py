@@ -25,11 +25,13 @@ df = pd.concat(df)
 # In[2]:
 
 
+MODEL = "▸ Ensemble"
+CONF = "Conf3"
 for TARGET in TARGETS:
         
     data = df[
-        (df.model=="RF") &\
-        (df.config=="Conf3") &\
+        (df.model==MODEL) &\
+        (df.config==CONF) &\
         (df.target==TARGET)
     ]
 
@@ -66,12 +68,12 @@ for TARGET in TARGETS:
     ax.set_xlabel("Real data - "+TARGET)
     ax.set_ylabel("Predicted data - "+TARGET)
     
-    plt.savefig(f"../results/trends_with_margins_RF_{TARGET}.png", facecolor='white', bbox_inches='tight', dpi=300)
-    plt.savefig(f"../results/trends_with_margins_RF_{TARGET}.pdf", bbox_inches='tight', dpi=300)
-    print("figure exported to", f"../results/trends_with_margins_RF_{TARGET}.[png/pdf]")
+    plt.savefig(f"../results/trends_with_margins_{MODEL}_{TARGET}_{CONF}.png", facecolor='white', bbox_inches='tight', dpi=300)
+    plt.savefig(f"../results/trends_with_margins_{MODEL}_{TARGET}_{CONF}.pdf", bbox_inches='tight', dpi=300)
+    print("figure exported to", f"../results/trends_with_margins_{MODEL}_{TARGET}_{CONF}.[png/pdf]")
     
-    plt.savefig(f"../figures_and_tables/figure_comparison_real_predicted_data_RF_{TARGET}.png", facecolor='white', bbox_inches='tight', dpi=300)
-    print("figure exported to", f"../figures_and_tables/figure_comparison_real_predicted_data_RF_{TARGET}.png")
+    plt.savefig(f"../figures_and_tables/figure_comparison_real_predicted_data_{MODEL}_{TARGET}_{CONF}.png", facecolor='white', bbox_inches='tight', dpi=300)
+    print("figure exported to", f"../figures_and_tables/figure_comparison_real_predicted_data_{MODEL}_{TARGET}_{CONF}.png")
 
     plt.show()
 
