@@ -1,109 +1,37 @@
-Model,Conf1,Conf2,Conf3,Conf4
-AdaBoost,"n_estimators: 100
-learning_rate: 0.1","n_estimators: 200
-learning_rate: 1.0","n_estimators: 200
-learning_rate: 1.0","n_estimators: 200
-learning_rate: 1.0"
-BaggedDT,"n_estimators: 100
-base_estimator__max_depth: 5","n_estimators: 100
-base_estimator__max_depth: 5","n_estimators: 100
-base_estimator__max_depth: 10","n_estimators: 100
-base_estimator__max_depth: 5"
-BayesianNN,"n_iter: 100
-lambda_2: 0.0001
-lambda_1: 1e-06
-alpha_2: 1e-06
-alpha_1: 0.0001","n_iter: 300
-lambda_2: 0.0001
-lambda_1: 0.0001
-alpha_2: 1e-06
-alpha_1: 0.0001","n_iter: 100
-lambda_2: 0.0001
-lambda_1: 1e-06
-alpha_2: 1e-06
-alpha_1: 0.0001","n_iter: 100
-lambda_2: 0.0001
-lambda_1: 1e-06
-alpha_2: 1e-06
-alpha_1: 0.0001"
-CatBoost,"learning_rate: 0.1
-l2_leaf_reg: 3
-iterations: 100
-depth: 2","learning_rate: 0.1
-l2_leaf_reg: 3
-iterations: 100
-depth: 2","learning_rate: 0.03
-l2_leaf_reg: 1
-iterations: 250
-depth: 4","learning_rate: 0.1
-l2_leaf_reg: 0.2
-iterations: 200
-depth: 4"
-GBDT,"subsample: 1
-n_estimators: 50
-max_leaf_nodes: 100
-max_depth: 2
-learning_rate: 0.1","subsample: 1
-n_estimators: 50
-max_leaf_nodes: 100
-max_depth: 2
-learning_rate: 0.1","subsample: 0.5
-n_estimators: 200
-max_leaf_nodes: 100
-max_depth: 4
-learning_rate: 0.01","subsample: 0.5
-n_estimators: 200
-max_leaf_nodes: 100
-max_depth: 4
-learning_rate: 0.01"
-KNN,n_neighbors: 8,n_neighbors: 10,n_neighbors: 9,n_neighbors: 10
-LightGBM,"n_estimators: 50
-max_depth: 4
-learning_rate: 0.05","n_estimators: 50
-max_depth: 10
-learning_rate: 0.05","n_estimators: 50
-max_depth: 4
-learning_rate: 0.1","n_estimators: 50
-max_depth: 10
-learning_rate: 0.1"
-MLP,"max_iter: 20
-learning_rate_init: 0.01
-hidden_layer_sizes: [64]","max_iter: 50
-learning_rate_init: 0.01
-hidden_layer_sizes: [64]","max_iter: 20
-learning_rate_init: 0.01
-hidden_layer_sizes: [128]","max_iter: 50
-learning_rate_init: 0.01
-hidden_layer_sizes: [4]"
-RF,"n_estimators: 600
-min_samples_split: 10
-min_samples_leaf: 5
-max_features: 6
-max_depth: 100","n_estimators: 200
-min_samples_split: 10
-min_samples_leaf: 5
-max_features: 6
-max_depth: 150","n_estimators: 600
-min_samples_split: 12
-min_samples_leaf: 4
-max_features: 6
-max_depth: 140","n_estimators: 600
-min_samples_split: 10
-min_samples_leaf: 5
-max_features: 6
-max_depth: 100"
-SVR,"gamma: 1e-05
-C: 10","gamma: 1e-05
-C: 10","gamma: 1e-05
-C: 100","gamma: 1e-05
-C: 100"
-StackEns,final_estimator__alpha: 10.0,final_estimator__alpha: 10.0,final_estimator__alpha: 0.1,final_estimator__alpha: 0.1
-XGBoost,"n_estimators: 500
-max_depth: 4
-learning_rate: 0.015","n_estimators: 500
-max_depth: 4
-learning_rate: 0.02","n_estimators: 500
-max_depth: 5
-learning_rate: 0.02","n_estimators: 700
-max_depth: 4
-learning_rate: 0.015"
+Model,hyperparameter,Conf1,Conf2,Conf3,Conf4
+AdaBoost,n_estimators,100,200,200,200
+AdaBoost,learning_rate,0.1,1.0,1.0,1.0
+BaggedDT,n_estimators,100,100,100,100
+BaggedDT,base_estimator__max_depth,5,5,10,5
+BayesianNN,n_iter,100,300,100,100
+BayesianNN,lambda_2,0.0001,0.0001,0.0001,0.0001
+BayesianNN,lambda_1,1e-06,0.0001,1e-06,1e-06
+BayesianNN,alpha_2,1e-06,1e-06,1e-06,1e-06
+BayesianNN,alpha_1,0.0001,0.0001,0.0001,0.0001
+CatBoost,learning_rate,0.1,0.1,0.03,0.1
+CatBoost,l2_leaf_reg,3,3,1,0.2
+CatBoost,iterations,100,100,250,200
+CatBoost,depth,2,2,4,4
+GBDT,subsample,1,1,0.5,0.5
+GBDT,n_estimators,50,50,200,200
+GBDT,max_leaf_nodes,100,100,100,100
+GBDT,max_depth,2,2,4,4
+GBDT,learning_rate,0.1,0.1,0.01,0.01
+KNN,n_neighbors,8,10,9,10
+LightGBM,n_estimators,50,50,50,50
+LightGBM,max_depth,4,10,4,10
+LightGBM,learning_rate,0.05,0.05,0.1,0.1
+MLP,max_iter,20,50,20,50
+MLP,learning_rate_init,0.01,0.01,0.01,0.01
+MLP,hidden_layer_sizes,[64],[64],[128],[4]
+RF,n_estimators,600,200,600,600
+RF,min_samples_split,10,10,12,10
+RF,min_samples_leaf,5,5,4,5
+RF,max_features,6,6,6,6
+RF,max_depth,100,150,140,100
+SVR,gamma,1e-05,1e-05,1e-05,1e-05
+SVR,C,10,10,100,100
+StackEns,final_estimator__alpha,10.0,10.0,0.1,0.1
+XGBoost,n_estimators,500,500,500,700
+XGBoost,max_depth,4,4,5,4
+XGBoost,learning_rate,0.015,0.02,0.02,0.015
