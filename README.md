@@ -76,11 +76,6 @@ Calculates the predictions of the Ensemble model consisting of the following bas
   - `../results/predictions--<TARGET>--<CONFIG>--Ensemble.csv`
   - `../results/metrics--<TARGET>--<CONFIG>--Ensemble.pickle`
 
-#### `01_summarize_all_metrics.*`
-Saves the hyperparameters of all the best models in
-  - `../results/hyperparams--<TARGET>.[txt/csv/xlsx]`
-  - `../figures_and_tables/table_appendix_hyperparameters--<TARGET>.[txt/csv/xlsx]`
-
 #### `03_create_results_table.*`
 Loads all metrics file available in the `../results` folder,
 computes the average metrics (and std).
