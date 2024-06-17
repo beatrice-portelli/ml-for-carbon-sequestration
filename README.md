@@ -1,7 +1,4 @@
-# ML for Carbon Sequestration
-
-Data and code for the manuscript
-"Assessing Ensemble Models for Carbon Sequestration and Storage Estimation in Forests Using Remote Sensing Data".
+# Accompanying software and data for the paper "Assessing Ensemble Models for Carbon Sequestration and Storage Estimation in Forests Using Remote Sensing Data"
 
 Authors:
 Mehdi Fasihi ¹,
@@ -17,6 +14,8 @@ Giuseppe Serra ¹.
 ³ Department of Agricultural, Food, Environmental and Animal Sciences, University of Udine, Udine, Italy <br>
 ⁴ Department of Life Sciences, University of Trieste, Trieste, Italy <br>
 ⁵ Free University of Bolzano, Bolzano, Italy
+
+Archived on Zenodo: https://zenodo.org/doi/10.5281/zenodo.10932817
 
 ## Metadata
 
