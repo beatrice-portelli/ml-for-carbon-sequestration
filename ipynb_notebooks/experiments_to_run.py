@@ -52,6 +52,7 @@ MODELS = [
     (
         lambda x: LGBMRegressor(
             random_state=42,
+            verbosity=-1,
         ),
         {
             'n_estimators': [50, 100, 200],  # Number of trees in the ensemble
