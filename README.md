@@ -256,14 +256,14 @@ row# ↴ ┃ index NDVI ... NDVI NDII ... NDII ... ASP  ... ASP
      0 ┃   0   ┌────---────┐ ┌────---────┐     ┌────---────┐
      1 ┃   0   │           │ │           │     │           │
      2 ┃   0   │ NDVI      │ │ NDII      │     │ ASP       │
-     : ┃   :   ╎ channel   ╎ ╎ channel   ╎ ... ╎ channel   ╎
+     : ┃   :   : channel   : : channel   : ... : channel   :
     29 ┃   0   │ sample 0  │ │ sample 0  │     │ sample 0  │
     30 ┃   0   │           │ │           │     │           │
     31 ┃   0   └────---────┘ └────---────┘     └────---────┘
     32 ┃   1   ┌────---────┐ ┌────---────┐     ┌────---────┐
     33 ┃   1   │           │ │           │     │           │
     34 ┃   1   │ NDVI      │ │ NDII      │     │ ASP       │
-     : ┃   :   ╎ channel   ╎ ╎ channel   ╎ ... ╎ channel   ╎
+     : ┃   :   : channel   : : channel   : ... : channel   :
     61 ┃   1   │ sample 1  │ │ sample 1  │     │ sample 1  │
     62 ┃   1   │           │ │           │     │           │
     63 ┃   1   └────---────┘ └────---────┘     └────---────┘
@@ -271,7 +271,7 @@ row# ↴ ┃ index NDVI ... NDVI NDII ... NDII ... ASP  ... ASP
   8896 ┃  278  ┌────---────┐ ┌────---────┐     ┌────---────┐
   8897 ┃  278  │           │ │           │     │           │
   8898 ┃  278  │ NDVI      │ │ NDII      │     │ ASP       │
-     : ┃   :   ╎ channel   ╎ ╎ channel   ╎ ... ╎ channel   ╎
+     : ┃   :   : channel   : : channel   : ... : channel   :
   8925 ┃  278  │ samp. 278 │ │ sam. 278  │     │ samp. 278 │
   8926 ┃  278  │           │ │           │     │           │
   8927 ┃  278  └────---────┘ └────---────┘     └────---────┘
