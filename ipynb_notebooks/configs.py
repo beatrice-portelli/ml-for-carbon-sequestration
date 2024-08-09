@@ -37,3 +37,19 @@ CONFIG_sat          = Config("Conf1", vegetation_indexes + elevation_slope_aspec
 CONFIG_sat_clim     = Config("Conf2", vegetation_indexes + elevation_slope_aspect + climatic)
 CONFIG_sat_chm      = Config("Conf3", vegetation_indexes + elevation_slope_aspect + chm)
 CONFIG_sat_clim_chm = Config("Conf4", vegetation_indexes + elevation_slope_aspect + chm + climatic)
+
+vegetation_indexes = ["NDVI", "NDII", "GNDVI", "EVI"]
+elevation_slope_aspect = ["ELE", "SLO", "ASP"]
+climatic = ["PREC_spring", "PREC_summer", "TEMP_spring", "TEMP_summer"]
+chm = ["CHM"]
+
+DL_CONFIG_sat          = Config("Conf1", vegetation_indexes + elevation_slope_aspect)
+DL_CONFIG_sat_clim     = Config("Conf2", vegetation_indexes + elevation_slope_aspect + climatic)
+DL_CONFIG_sat_chm      = Config("Conf3", vegetation_indexes + elevation_slope_aspect + chm)
+DL_CONFIG_sat_clim_chm = Config("Conf4", vegetation_indexes + elevation_slope_aspect + chm + climatic)
+
+# https://gisgeography.com/sentinel-2-bands-combinations/
+DL_CONFIG_sat_348      = Config("Conf5_colorinfrared_rev", ["SAT_3_green", "SAT_4_red", "SAT_8_nir"])
+DL_CONFIG_sat_234      = Config("Conf5_realcolors_rev", ["SAT_2_blue", "SAT_3_green", "SAT_4_red"])
+DL_CONFIG_sat_843      = Config("Conf5_colorinfrared", ["SAT_8_nir", "SAT_4_red", "SAT_3_green"])
+DL_CONFIG_sat_432      = Config("Conf5_realcolors", ["SAT_4_red", "SAT_3_green", "SAT_2_blue"])

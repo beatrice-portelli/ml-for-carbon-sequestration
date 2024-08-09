@@ -12,6 +12,7 @@ CatBoost,learning_rate,0.1,0.03,0.1,0.03
 CatBoost,l2_leaf_reg,0.2,0.2,0.2,1
 CatBoost,iterations,200,200,200,250
 CatBoost,depth,4,4,4,4
+DeepCNN,,,,,
 GBDT,subsample,1,0.5,0.75,1
 GBDT,n_estimators,1000,200,100,200
 GBDT,max_leaf_nodes,10,100,100,20
