@@ -27,10 +27,10 @@ def normalized_root_mean_squared_error(y_true, y_pred, norm_factor=None):
 
 
 ENSEMBLE_MODELS = [
-    "RF",
-    "CatBoost",
-    "LightGBM",
     "AdaBoost",
+    "CatBoost",
+    "RF",
+    "StackEns",
 ]
 
 ensemble_res = []
@@ -47,9 +47,9 @@ for TARGET in TARGETS:
 
             data = pd.read_pickle(f"{root}/predictions--{TARGET}--{CONFIG}--{MODEL}.pickle")
             if res is None:
-                res = data[["y_pred"]].copy()
+                res = data[["y_pred", "y_pred_train"]].copy()
             else:
-                res += data[["y_pred"]]
+                res += data[["y_pred", "y_pred_train"]]
 
         res = res/len(ENSEMBLE_MODELS)
 
@@ -83,12 +83,31 @@ for TARGET in TARGETS:
             [x for (i,x) in tmp[["fold","y_pred"]].explode(column="y_pred").groupby("fold")],
             axis=0
         ).reset_index(drop=True)
+        
+        y_train = pd.concat(
+            [x for (i,x) in tmp[["fold","y_train"]].explode(column="y_train").groupby("fold")],
+            axis=0
+        ).reset_index(drop=True)
+        y_pred_train = pd.concat(
+            [x for (i,x) in tmp[["fold","y_pred_train"]].explode(column="y_pred_train").groupby("fold")],
+            axis=0
+        ).reset_index(drop=True)
+
         test_index = pd.DataFrame(
             sum(tmp.X_test.apply(lambda d: d.index.tolist()).values.tolist(), []),
             columns=["sample_idx"]
         )
+        train_index = pd.DataFrame(
+            sum(tmp.X_train.apply(lambda d: d.index.tolist()).values.tolist(), []),
+            columns=["sample_idx"]
+        )
+
+        
         tmp2 = pd.concat(( y_test, y_pred["y_pred"], test_index), axis=1)
-        tmp2.to_csv(save_path.replace("pickle", "csv"), index=None)
+        tmp2.to_csv(save_path.replace("pickle", "csv").replace("predictions", "predictions_test"), index=None)
+        
+        tmp2 = pd.concat(( y_train, y_pred_train["y_pred_train"], train_index), axis=1)
+        tmp2.to_csv(save_path.replace("pickle", "csv").replace("predictions", "predictions_train"), index=None)
         
         data = res
         
@@ -97,9 +116,16 @@ for TARGET in TARGETS:
         data["MAPE"] = data.apply(lambda row: mean_absolute_percentage_error(row.y_test, row.y_pred), axis=1)
         data["RMSE"] = data.apply(lambda row: root_mean_squared_error(row.y_test, row.y_pred), axis=1)
         data["NRMSE"] = data.apply(lambda row: normalized_root_mean_squared_error(row.y_test, row.y_pred, norm_factor=row.y_train.mean()), axis=1)
+        
+        data["MSE_train"] = data.apply(lambda row: mean_squared_error(row.y_train, row.y_pred_train), axis=1)
+        data["R2_train"] = data.apply(lambda row: r2_score(row.y_train, row.y_pred_train), axis=1)
+        data["MAPE_train"] = data.apply(lambda row: mean_absolute_percentage_error(row.y_train, row.y_pred_train), axis=1)
+        data["RMSE_train"] = data.apply(lambda row: root_mean_squared_error(row.y_train, row.y_pred_train), axis=1)
+        data["NRMSE_train"] = data.apply(lambda row: normalized_root_mean_squared_error(row.y_train, row.y_pred_train, norm_factor=row.y_train.mean()), axis=1)
 
-        data = data.drop(columns=["X_train", "y_train", "X_test", "y_test", "y_pred"])
+        data = data.drop(columns=["X_train", "y_train", "X_test", "y_test", "y_pred", "y_pred_train"])
         save_path = f"../results/metrics--{TARGET}--{CONFIG}--Ensemble.pickle"
+        
         data.to_pickle(save_path)
         print("metrics, predictions and models saved to\n", save_path)
         

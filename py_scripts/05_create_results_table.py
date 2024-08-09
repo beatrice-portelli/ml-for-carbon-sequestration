@@ -11,9 +11,14 @@ root_folder = "../results"
 
 
 metrics2paper = {
-    "R2": "R2",
-    "RMSE": "RMSE",
-    "NRMSE": "%RMSE",
+    "R2": "R2 (val)",
+    "MAPE": "MAPE (val)",
+    "RMSE": "RMSE (val)",
+    "NRMSE": "%RMSE (val)",
+    "R2_train": "R2 (train)",
+    "MAPE_train": "MAPE (train)",
+    "RMSE_train": "RMSE (train)",
+    "NRMSE_train": "%RMSE (train)",
 }
 
 
@@ -36,7 +41,7 @@ df = pd.concat(df)
 # In[4]:
 
 
-metrics = ["R2", "MAPE", "RMSE", "NRMSE"]
+metrics = ["R2", "MAPE", "RMSE", "NRMSE", "R2_train", "MAPE_train", "RMSE_train", "NRMSE_train"]
 
 df_ens = df[df.model == "▸ Ensemble"]
 df = df[df.model != "▸ Ensemble"]

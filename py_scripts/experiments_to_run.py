@@ -17,6 +17,60 @@ from catboost import CatBoostRegressor
 from xgboost import XGBRegressor
 from lightgbm import LGBMRegressor
 
+from keras.wrappers.scikit_learn import KerasRegressor
+
+
+import numpy as np
+import tensorflow as tf
+from tensorflow import keras
+from sklearn.model_selection import GridSearchCV
+from keras.wrappers.scikit_learn import KerasRegressor
+# Assuming train_data_reshaped and train_labels are already defined and loaded
+
+def build_conv1D_model(
+    optimizer='adam',
+    filters1=64,
+    filters2=32,
+    filters3=16,
+    kernel_size1=7,
+    kernel_size2=3,
+    kernel_size3=2,
+    dropout_rate=0.5,
+    num_features=0,
+):
+    n_timesteps = num_features
+    n_features  = 1
+    model = keras.Sequential(name="model_conv1D")
+    model.add(keras.layers.Input(shape=(n_timesteps, n_features)))
+    model.add(keras.layers.Conv1D(filters=filters1, kernel_size=kernel_size1, activation='relu', name="Conv1D_1"))
+    model.add(keras.layers.Dropout(dropout_rate))
+    model.add(keras.layers.Conv1D(filters=filters2, kernel_size=kernel_size2, activation='relu', name="Conv1D_2"))
+    model.add(keras.layers.Conv1D(filters=filters3, kernel_size=kernel_size3, activation='relu', name="Conv1D_3"))
+    model.add(keras.layers.MaxPooling1D(pool_size=2, name="MaxPooling1D"))
+    model.add(keras.layers.Flatten())
+    model.add(keras.layers.Dense(32, activation='relu', name="Dense_1"))
+    model.add(keras.layers.Dense(n_features, name="Dense_2"))
+    model.compile(loss='mse', optimizer=optimizer, metrics=['mae'])
+    
+    print(f"""
+    ----------------------------------------
+    built a conv1D model with parameters:
+    optimizer={optimizer},
+    filters1={filters1},
+    filters2={filters2},
+    filters3={filters3},
+    kernel_size1={kernel_size1},
+    kernel_size2={kernel_size2},
+    kernel_size3={kernel_size3},
+    dropout_rate={dropout_rate},
+    num_features={num_features},
+    """)
+    
+    return model
+
+
+
+
 
 from configs import *
 
@@ -24,6 +78,29 @@ from configs import *
 MODELS = [
     
     # format: (model_class, param_distributions, search_cv_args)
+    
+    
+#     (
+#         # Wrap the Keras model so it can be used by scikit-learn
+#         lambda x: KerasRegressor(
+#             build_fn=build_conv1D_model,
+#             verbose=0
+#         ),        
+#         {
+#             'optimizer': ['RMSprop', 'Adam'],
+#             'filters1': [32, 64],
+#             'filters2': [16, 32],
+#             'filters3': [8, 16],
+#             'kernel_size1': [5, 7],
+#             'kernel_size2': [3, 5],
+#             'kernel_size3': [2, 3],
+#             'dropout_rate': [0.3, 0.5],
+#             'epochs': [100],
+#             'batch_size': [10, 20],
+#         },
+#         dict(),
+#     ),
+    
     
     (
         lambda x: BaggingRegressor(
@@ -52,6 +129,7 @@ MODELS = [
     (
         lambda x: LGBMRegressor(
             random_state=42,
+            verbosity=-1,
         ),
         {
             'n_estimators': [50, 100, 200],  # Number of trees in the ensemble

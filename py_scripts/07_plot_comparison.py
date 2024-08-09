@@ -30,17 +30,6 @@ def plot_R2_std_against_avg(TARGET, CONFIG):
     df["idx"] = range(len(df))    
     fig, ax = plt.subplots(figsize=(10,7))
 
-
-    # ==========================================
-    # horizontal zero line
-    # ax.hlines(
-    #     0,
-    #     -1,len(df),
-    #     color="k",
-    #     ls="-",
-    #     lw=1,
-    # )
-
     # ==========================================
     # horizontal Average R2 line
     color = "tab:blue"
