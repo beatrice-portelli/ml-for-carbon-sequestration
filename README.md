@@ -6,14 +6,13 @@ Beatrice Portelli ¹ ²,
 Luca Cadez ³ ⁴,
 Antonio Tomao ³,
 Alex Falcon ¹,
-Giorgio Alberti ³ ⁵,
+Giorgio Alberti ³,
 Giuseppe Serra ¹.
 
 ¹ Department of Mathematics, Computer Science and Physics, University of Udine, Udine, Italy <br>
 ² Department of Biology, University of Napoli Federico II, Napoli, Italy <br>
 ³ Department of Agricultural, Food, Environmental and Animal Sciences, University of Udine, Udine, Italy <br>
-⁴ Department of Life Sciences, University of Trieste, Trieste, Italy <br>
-⁵ Free University of Bolzano, Bolzano, Italy
+⁴ Department of Life Sciences, University of Trieste, Trieste, Italy
 
 Archived on Zenodo: https://zenodo.org/doi/10.5281/zenodo.10932817
 
@@ -23,7 +22,9 @@ See file `metadata.xml`
 
 ## Requirements
 
-All experiments were run using **python 3.8.13**
+All experiments were run using **python 3.8.13**.
+
+For library requirements check `requirements.txt`
 
 
 ## Code overview
@@ -53,6 +54,14 @@ Defines:
 - `CONFIGS`: the configudations of input features to test (Conf1, Conf2, Conf3, and Conf4 in the manuscript)
 - `TARGETS`: list of all the targets to predict (CS and CSE)
 
+#### `dl_experiment.py`
+Contains the main functions to train the DeepCNN model.
+
+#### `dl_utils.py`
+Contains helper functions to initialize the DeepCNN model and prepare its input data.
+
+
+
 #### `00_run_all_experiments.*`
 Contains the code to run the training and evaluation of the models and configurations contained in `experiments_to_run.py`. The code does the following for each model:
 - load `data.csv` and select the relevant subset of input features (according to the CONFIG) and target (according to TARGET)
@@ -75,29 +84,42 @@ Calculates the predictions of the Ensemble model consisting of the following bas
   - `../results/predictions--<TARGET>--<CONFIG>--Ensemble.csv`
   - `../results/metrics--<TARGET>--<CONFIG>--Ensemble.pickle`
 
-#### `03_create_results_table.*`
+
+#### `03_grid_search_DeepCNN.*`
+Contains the code to run the training and evaluation of the DeepCNN models using the configurations contained in `experiments_to_run.py`.
+The results of the training are saved in the folder `dl_output`
+
+#### `04_extract_vgg16_results.*`
+Extracts the results of the best DeepCNN model (VGG16) and converts them in the same format used by the machine learning models.
+Saves the metrics in
+  - `../results/metrics--<TARGET>--<CONFIG>--DeepCNN.pickle`
+
+#### `05_create_results_table.*`
 Loads all metrics file available in the `../results` folder,
 computes the average metrics (and std).
 Saves the resulting table(s) in
   - `../results/table_<TARGET>.[txt/csv/xlsx]`
   - `../figures_and_tables/table_performance_<TARGET>.[txt/csv/xlsx]`
 
-#### `04_plot_comparison.*`
-Loads all the metrics and creates the figures to showcase the performance diversity of all the models.
-Figures are saved in
-  - `../figures_and_tables/figure_performance_comparison_<TARGET>_<CONFIG>.png`
-
-
-#### `05_shap.*`
-Computes the SHAP feature importances for the Random Forest (RF) on all targets and configurations.
-Saves all images in
-  - `../figures_and_tables/figure_shap_RF_<TARGET>_<CONFIG>.png`
-
 #### `06_plot_trends.*`
 Loads all the predictions, plots the correlation between real and predicted values and their marginal distributions.
 Saves the results for the Ensemble model on Conf3 in
   - `../results/trends_with_margins_▸ Ensemble_CS_Conf3.[png/pdf]`
   - `../figures_and_tables/figure_comparison_real_predicted_data_▸ Ensemble_CS_Conf3.png`
+
+#### `07_plot_comparison.*`
+Loads all the metrics and creates the figures to showcase the performance diversity of all the models.
+Figures are saved in
+  - `../figures_and_tables/figure_performance_comparison_<TARGET>_<CONFIG>.png`
+
+#### `08_shap.*`
+Computes the SHAP feature importances for the Random Forest (RF) on all targets and configurations.
+Saves different kinds of plots as
+  - `../figures_and_tables/figure_shap_BAR_RF_<TARGET>_<CONFIG>.png`
+  - `../figures_and_tables/figure_shap_FORCEbad_RF_<TARGET>_<CONFIG>.png`
+  - `../figures_and_tables/figure_shap_FORCEgood_RF_<TARGET>_<CONFIG>.png`
+  - `../figures_and_tables/figure_shap_SUMMARY_RF_<TARGET>_<CONFIG>.png`
+  - `../figures_and_tables/figure_shap_VIOLIN_RF_<TARGET>_<CONFIG>.png`
 
 
 
@@ -107,7 +129,7 @@ Saves the results for the Ensemble model on Conf3 in
 2) Verify that your python version is 3.8.13
 3) Install the required libraries using `pip install -r requirements.txt`
 4) Move to the `py_scripts` or `ipynb_notebooks` folder
-5) Execute all files in sequence (00, 01, 02, 03, 04)
+5) Execute all files in sequence (00, 01, 02, 03, 04, ...)
 6) The figures and tables present in the manuscript can be found in the folder `figures_and_tables`.<br>
 Detailed results can be found in the `results` folder.
 
@@ -188,3 +210,72 @@ Column descriptions:
   (mean, max, min)
   
 ```
+
+### `spatial_clusters_10.csv`
+
+For each sample of the dataset (279 rows), code of the spatial cluster it belongs to.
+Samples are in the same order as `data.csv`.
+There are 10 clusters numbered from 0 to 9.
+
+### `preprocess_images_to_samples.ipynb`
+
+Code used to generate the input patches for the 279 samples of the dataset.
+The outputs are saved in the `image_data` folder.
+
+### `image_data/32x32.[csv/pkl]`
+
+Table containing the 32x32 matrices of image-like input data for the DeepCNN models, for the 12 input features.
+
+Table dimensions:
+- 8928 rows (279 samples * 32 image size) + 1 header (feature names)
+- 384 columns (12 input features * 32 image size) + 1 index (sample id, same as `data.csv`)
+
+Preview of the data:
+
+```
+index    NDVI      NDVI  ...         ASP         ASP
+0    0.803525  0.793218  ...  151.813477  163.113388
+0    0.818427  0.811217  ...  159.014526  167.207336
+0    0.824016  0.804485  ...  160.495529  169.547455
+0    0.819101  0.806417  ...  161.815430  173.306885
+0    0.807702  0.811035  ...  162.627441  174.042145
+..        ...       ...  ...         ...         ...
+278  0.845726  0.830755  ...  256.716888  244.695602
+278  0.840384  0.836642  ...  249.973343  231.477371
+278  0.834502  0.836623  ...  255.554337  221.256027
+278  0.834502  0.836623  ...  266.176819  217.352722
+278  0.835701  0.821787  ...  270.000000  316.146881
+```
+
+Schema of the data:
+
+```
+        column# → 0 ...   31   32 ...   63 ... 352  ... 383 
+       ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+row# ↴ ┃ index NDVI ... NDVI NDII ... NDII ... ASP  ... ASP 
+     0 ┃   0   ┌────---────┐ ┌────---────┐     ┌────---────┐
+     1 ┃   0   │           │ │           │     │           │
+     2 ┃   0   │ NDVI      │ │ NDII      │     │ ASP       │
+     : ┃   :   ╎ channel   ╎ ╎ channel   ╎ ... ╎ channel   ╎
+    29 ┃   0   │ sample 0  │ │ sample 0  │     │ sample 0  │
+    30 ┃   0   │           │ │           │     │           │
+    31 ┃   0   └────---────┘ └────---────┘     └────---────┘
+    32 ┃   1   ┌────---────┐ ┌────---────┐     ┌────---────┐
+    33 ┃   1   │           │ │           │     │           │
+    34 ┃   1   │ NDVI      │ │ NDII      │     │ ASP       │
+     : ┃   :   ╎ channel   ╎ ╎ channel   ╎ ... ╎ channel   ╎
+    61 ┃   1   │ sample 1  │ │ sample 1  │     │ sample 1  │
+    62 ┃   1   │           │ │           │     │           │
+    63 ┃   1   └────---────┘ └────---────┘     └────---────┘
+     : ┃   :         :             :                 :
+  8896 ┃  278  ┌────---────┐ ┌────---────┐     ┌────---────┐
+  8897 ┃  278  │           │ │           │     │           │
+  8898 ┃  278  │ NDVI      │ │ NDII      │     │ ASP       │
+     : ┃   :   ╎ channel   ╎ ╎ channel   ╎ ... ╎ channel   ╎
+  8925 ┃  278  │ samp. 278 │ │ sam. 278  │     │ samp. 278 │
+  8926 ┃  278  │           │ │           │     │           │
+  8927 ┃  278  └────---────┘ └────---────┘     └────---────┘
+       ┃
+```
+
+
