@@ -14,7 +14,33 @@ Giuseppe Serra ¹.
 ³ Department of Agricultural, Food, Environmental and Animal Sciences, University of Udine, Udine, Italy <br>
 ⁴ Department of Life Sciences, University of Trieste, Trieste, Italy
 
-Archived on Zenodo: https://zenodo.org/doi/10.5281/zenodo.10932817
+Paper published on "Ecological Informatics": https://doi.org/10.1016/j.ecoinf.2024.102828
+
+```
+@article{FASIHI-2024-Assessing,
+  title = {Assessing ensemble models for carbon sequestration and storage estimation in forests using remote sensing data},
+  journal = {Ecological Informatics},
+  volume = {83},
+  pages = {102828},
+  year = {2024},
+  issn = {1574-9541},
+  doi = {https://doi.org/10.1016/j.ecoinf.2024.102828},
+  url = {https://www.sciencedirect.com/science/article/pii/S1574954124003704},
+  author = {Mehdi Fasihi and Beatrice Portelli and Luca Cadez and Antonio Tomao and Alex Falcon and Giorgio Alberti and Giuseppe Serra},
+}
+```
+
+Repository archived on Zenodo: https://zenodo.org/doi/10.5281/zenodo.10932817
+
+```
+@misc{PORTELLI-2024-Assessing,
+  doi = {10.5281/zenodo.13285468},
+  author = {Beatrice Portelli and Mehdi Fasihi and Luca Cadez and Antonio Tomao and Alex Falcon and Giorgio Alberti and Giuseppe Serra},
+  note = {Software published on Zenodo},
+  title = {Accompanying software and data for the paper "Assessing Ensemble Models for Carbon Sequestration and Storage Estimation in Forests Using Remote Sensing Data"},
+  year = {2024}
+}
+```
 
 ## Metadata
 
